@@ -17,12 +17,11 @@ class SuggestionModel {
   SuggestionModel(this.suggestables);
 
   List<String> suggest(String inputText) {
-    return suggestables
-        .where((String suggestionCandidate) {
-          suggestionCandidate.contains(inputText);
-        })
-        .take(5)
-        .toList();
+    return suggestables.where((String suggestionCandidate) {
+      print(
+          'candidate: $suggestionCandidate contains $inputText: ${suggestionCandidate.contains(inputText)}');
+      return suggestionCandidate.contains(inputText);
+    }).toList();
   }
 }
 
@@ -42,26 +41,37 @@ class SuggestionWidget extends StatefulWidget {
 }
 
 class _SuggestionWidgetState extends State<SuggestionWidget> {
-  final TextEditingController _controller = new TextEditingController();
+  final TextEditingController _controller =
+      new TextEditingController(text: 'words');
 
   @override
   Widget build(BuildContext context) {
-    return new Column(children: <Widget>[
-      new Row(children: <Widget>[
-        new TextField(
-          controller: _controller,
-          decoration: widget.decoration,
-        ),
-      ]),
-      const Divider(height: 0.0),
-      new ListBody(children: _buildSuggestions(context)),
-    ]);
+    return new Column(
+      mainAxisSize: MainAxisSize.min,
+      children: <Widget>[
+        new Row(children: <Widget>[
+          new Icon(widget.leftIcon),
+          new Flexible(
+            fit: FlexFit.tight,
+            child: new TextField(
+              controller: _controller,
+              onChanged: (_) {
+                setState(() {});
+              },
+            ),
+          ),
+        ]),
+        const Divider(height: 0.0),
+        new ListBody(children: _buildSuggestions(context)),
+      ],
+    );
   }
 
   List<Widget> _buildSuggestions(BuildContext context) {
     return widget.suggestionModel
         .suggest(_controller.text)
         .map((String suggestion) => new Text(suggestion))
+        .take(5)
         .toList();
   }
 }

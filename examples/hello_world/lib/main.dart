@@ -2,6 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 
-void main() => runApp(const Center(child: const Text('Hello, world!')));
+void main() => runApp(
+      new MaterialApp(
+        home: new Scaffold(
+          appBar: new AppBar(title: const Text('hello words')),
+          body: new Material(
+            type: MaterialType.canvas,
+            child: new Container(
+              child: new Center(
+                child: new SuggestionWidget(
+                  suggestionModel:
+                      new SuggestionModel(<String>['words', 'more words']),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
