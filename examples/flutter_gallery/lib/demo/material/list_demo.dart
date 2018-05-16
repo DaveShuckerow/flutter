@@ -29,6 +29,7 @@ class ListDemo extends StatefulWidget {
 
 class _ListDemoState extends State<ListDemo> {
   static final GlobalKey<ScaffoldState> scaffoldKey = new GlobalKey<ScaffoldState>();
+  final GlobalKey fillerKey = new GlobalKey();
 
   PersistentBottomSheetController<Null> _bottomSheet;
   _MaterialListType _itemType = _MaterialListType.threeLine;
@@ -206,8 +207,6 @@ class _ListDemoState extends State<ListDemo> {
         itemTypeText = 'Three-line';
         break;
     }
-
-    final GlobalKey fillerKey = new GlobalKey();
 
     Iterable<Widget> listTiles = items.map((String item) => buildListTile(context, item));
     if (_showDividers)
