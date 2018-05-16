@@ -207,10 +207,12 @@ class _ListDemoState extends State<ListDemo> {
         break;
     }
 
+    final GlobalKey fillerKey = new GlobalKey();
+
     Iterable<Widget> listTiles = items.map((String item) => buildListTile(context, item));
     if (_showDividers)
       listTiles = ListTile.divideTiles(context: context, tiles: listTiles);
-
+    listTiles = [new SizedBox(key: fillerKey, height: 100.0, child: const Text('Filler'))]..addAll(listTiles);
     return new Scaffold(
       key: scaffoldKey,
       appBar: new AppBar(
@@ -234,9 +236,14 @@ class _ListDemoState extends State<ListDemo> {
         ],
       ),
       body: new Scrollbar(
-        child: new ListView(
+        child: new ListView.builder(
           padding: new EdgeInsets.symmetric(vertical: _dense ? 4.0 : 8.0),
-          children: listTiles.toList(),
+          itemCount: listTiles.length,
+          itemBuilder: (BuildContext context, int index) {
+            return new GestureDetector(child: listTiles.toList()[index], onLongPress: () {
+              Scrollable.ensureVisible(fillerKey.currentContext, alignment: 0.5, duration: const Duration(milliseconds: 200));
+            });
+          }
         ),
       ),
     );
