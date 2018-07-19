@@ -361,6 +361,8 @@ class _ReorderableListContentState extends State<_ReorderableListContent> with T
           widget.scrollDirection == Axis.horizontal ? _dropAreaExtent / 2.0 : 0.0,
           widget.scrollDirection == Axis.vertical ? _dropAreaExtent / 2.0 : 0.0,
         ),
+        feedbackConstraints: new Rect.fromLTRB(
+          0.0, 0.0, constraints.maxWidth - _dropAreaExtent, constraints.maxHeight - _dropAreaExtent),
         feedback: new Container(
           alignment: Alignment.topLeft,
           // These constraints will limit the cross axis of the drawn widget.

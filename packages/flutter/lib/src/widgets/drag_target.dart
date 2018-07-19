@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:math';
+
 import 'package:flutter/gestures.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
@@ -94,6 +96,7 @@ class Draggable<T> extends StatefulWidget {
     this.data,
     this.axis,
     this.childWhenDragging,
+    this.feedbackConstraints,
     this.feedbackOffset = Offset.zero,
     this.dragAnchor = DragAnchor.child,
     this.affinity,
@@ -162,6 +165,16 @@ class Draggable<T> extends StatefulWidget {
   /// purposes of finding a drag target. It is especially useful if the feedback
   /// is transformed compared to the child.
   final Offset feedbackOffset;
+
+  /// The limits on where the [feedback] widget can be dragged.
+  /// 
+  /// If null, the [feedback] can be dragged freely.
+  /// 
+  /// Otherwise, the [feedback] won't move to x positions left
+  /// of the rect's left edge, right of the rect's right edge, 
+  /// nor will it move to y positions above the rect's top edge
+  /// or below the rect's bottom edge.
+  final Rect feedbackConstraints;
 
   /// Where this widget should be anchored during a drag.
   final DragAnchor dragAnchor;
@@ -262,6 +275,7 @@ class LongPressDraggable<T> extends Draggable<T> {
     Axis axis,
     Widget childWhenDragging,
     Offset feedbackOffset = Offset.zero,
+    Rect feedbackConstraints,
     DragAnchor dragAnchor = DragAnchor.child,
     int maxSimultaneousDrags,
     VoidCallback onDragStarted,
@@ -276,6 +290,7 @@ class LongPressDraggable<T> extends Draggable<T> {
     axis: axis,
     childWhenDragging: childWhenDragging,
     feedbackOffset: feedbackOffset,
+    feedbackConstraints: feedbackConstraints,
     dragAnchor: dragAnchor,
     maxSimultaneousDrags: maxSimultaneousDrags,
     onDragStarted: onDragStarted,
@@ -357,6 +372,7 @@ class _DraggableState<T> extends State<Draggable<T>> {
       initialPosition: position,
       dragStartPoint: dragStartPoint,
       feedback: widget.feedback,
+      feedbackConstraints: widget.feedbackConstraints,
       feedbackOffset: widget.feedbackOffset,
       ignoringFeedbackSemantics: widget.ignoringFeedbackSemantics,
       onDragEnd: (Velocity velocity, Offset offset, bool wasAccepted) {
@@ -510,6 +526,7 @@ class _DragAvatar<T> extends Drag {
     this.axis,
     Offset initialPosition,
     this.dragStartPoint = Offset.zero,
+    this.feedbackConstraints,
     this.feedback,
     this.feedbackOffset = Offset.zero,
     this.onDragEnd,
@@ -527,6 +544,7 @@ class _DragAvatar<T> extends Drag {
   final T data;
   final Axis axis;
   final Offset dragStartPoint;
+  final Rect feedbackConstraints;
   final Widget feedback;
   final Offset feedbackOffset;
   final _OnDragEnd onDragEnd;
@@ -634,13 +652,20 @@ class _DragAvatar<T> extends Drag {
   Widget _build(BuildContext context) {
     final RenderBox box = overlayState.context.findRenderObject();
     final Offset overlayTopLeft = box.localToGlobal(Offset.zero);
+    final Widget child = new IgnorePointer(
+      child: feedback,
+      ignoringSemantics: ignoringFeedbackSemantics,
+    );
+    double left = _lastOffset.dx - overlayTopLeft.dx;
+    double top = _lastOffset.dy - overlayTopLeft.dy;
+    if (feedbackConstraints != null) {
+      left = min(max(feedbackConstraints.left, left), feedbackConstraints.right);
+      top = min(max(feedbackConstraints.top, top), feedbackConstraints.bottom);
+    }
     return new Positioned(
-      left: _lastOffset.dx - overlayTopLeft.dx,
-      top: _lastOffset.dy - overlayTopLeft.dy,
-      child: new IgnorePointer(
-        child: feedback,
-        ignoringSemantics: ignoringFeedbackSemantics,
-      )
+      left: left,
+      top: top,
+      child: child,
     );
   }
 
