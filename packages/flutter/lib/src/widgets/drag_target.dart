@@ -170,10 +170,14 @@ class Draggable<T> extends StatefulWidget {
   /// 
   /// If null, the [feedback] can be dragged freely.
   /// 
-  /// Otherwise, the [feedback] won't move to x positions left
-  /// of the rect's left edge, right of the rect's right edge, 
-  /// nor will it move to y positions above the rect's top edge
+  /// Otherwise, the [feedback] won't move to positions left of the rect's
+  /// left edge, right of the rect's right edge, above the rect's top edge
   /// or below the rect's bottom edge.
+  /// 
+  /// The coordinate space for the constraints is the coordinate space of
+  /// this widget's ancestor [Overlay], as determined by [Overlay.of].
+  /// 
+  /// To restrict the [feedback]'s motion to only one [Axis], see [axis].
   final Rect feedbackConstraints;
 
   /// Where this widget should be anchored during a drag.
