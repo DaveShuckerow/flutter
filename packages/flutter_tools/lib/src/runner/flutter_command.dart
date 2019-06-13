@@ -88,7 +88,7 @@ abstract class FlutterCommand extends Command<void> {
   @override
   ArgParser get argParser => _argParser;
   final ArgParser _argParser = ArgParser(
-    allowTrailingOptions: false,
+    allowTrailingOptions: true,
     usageLineLength: outputPreferences.wrapText ? outputPreferences.wrapColumn : null,
   );
 
